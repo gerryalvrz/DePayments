@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model PSM {
+  id                        String     @id @default(uuid()) @map("ID")
+  horarioEnvio              DateTime   @map("Horario de envío")
+  nombre                    String     @map("Nombre")
+  apellido                  String     @map("Apellido")
+  email                     String     @map("Email")
+  fechaNacimiento           DateTime   @map("Fecha de nacimiento")
+  telefono                  String     @map("Teléfono")
+  lugarResidencia           String     @map("Lugar de residencia")
+  // …all your other fields…
+  createdDate               DateTime   @map("Created Date")
+  updatedDate               DateTime   @map("Updated Date")
+  owner                     String     @map("Owner")
+
+  usuarios                  Usuario[]  // ← back-relation
+}
+
+model Usuario {
+  id                        String     @id @default(uuid()) @map("ID")
+  horarioEnvio              DateTime   @map("Horario de envío")
+  nombre                    String     @map("Nombre")
+  apellido                  String     @map("Apellido")
+  email                     String     @map("Email")
+  fechaNacimiento           DateTime   @map("Fecha de nacimiento")
+  telefono                  String     @map("Teléfono")
+  lugarResidencia           String     @map("Lugar de residencia")
+  // …your other Usuario fields…
+  createdDate               DateTime   @map("Created Date")
+  updatedDate               DateTime   @map("Updated Date")
+  owner                     String     @map("Owner")
+
+  // — Relation to PSM —
+  currentPsmId              String?    
+  currentPsm                PSM?       @relation(fields: [currentPsmId], references: [id])
+}
