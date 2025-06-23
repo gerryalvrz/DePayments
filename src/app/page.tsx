@@ -1,158 +1,59 @@
-'use client'
+import  { Users, Wallet, Activity, TrendingUp } from 'lucide-react';
 
-import { useState, useEffect, FormEvent } from 'react'
-
-interface PSM {
-  id: string
-  nombre: string
-  apellido: string
-  email: string
-  fechaNacimiento: string
-  telefono?: string
-  lugarResidencia?: string
-  owner: string
-
-}
-
-export default function PSMPage() {
-  const [psms, setPsms] = useState<PSM[]>([])
-  const [form, setForm] = useState<Partial<PSM>>({})
-  const [editingId, setEditingId] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchPsms()
-  }, [])
-
-  async function fetchPsms() {
-    const res = await fetch('/api/psms')
-    setPsms(await res.json())
-  }
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    const payload = {
-      nombre: form.nombre,
-      apellido: form.apellido,
-      email: form.email,
-      fechaNacimiento: form.fechaNacimiento,
-      telefono: form.telefono,
-      lugarResidencia: form.lugarResidencia,
-      owner: form.owner || '',  
-    }
-    const url = editingId ? `/api/psms/${editingId}` : '/api/psms'
-    const method = editingId ? 'PUT' : 'POST'
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-    if (res.ok) {
-      setForm({})
-      setEditingId(null)
-      fetchPsms()
-    }
-  }
-
-  function startEdit(psm: PSM) {
-    setEditingId(psm.id)
-    setForm({
-      ...psm,
-      fechaNacimiento: psm.fechaNacimiento.split('T')[0],
-    })
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('Delete this PSM?')) return
-    const res = await fetch(`/api/psms/${id}`, { method: 'DELETE' })
-    if (res.ok) fetchPsms()
-  }
+export default function Dashboard() {
+  const stats = [
+    { label: 'Total PSMs', value: '24', icon: Users, color: 'text-secondary' },
+    { label: 'Wallet Balance', value: '0.45 ETH', icon: Wallet, color: 'text-info' },
+    { label: 'Active Hires', value: '1', icon: Activity, color: 'text-primary' },
+    { label: 'Total Payments', value: '$2,840', icon: TrendingUp, color: 'text-secondary' },
+  ];
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">PSM Manager</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-textPrimary">Dashboard</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-surface p-6 rounded-lg border border-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">{stat.label}</p>
+                <p className="text-2xl font-bold text-textPrimary mt-2">{stat.value}</p>
+              </div>
+              <stat.icon className={`w-8 h-8 ${stat.color}`} />
+            </div>
+          </div>
+        ))}
+      </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mb-6">
-        <input
-          name="nombre"
-          value={form.nombre || ''}
-          onChange={handleChange}
-          placeholder="Nombre"
-          required
-        />
-        <input
-          name="apellido"
-          value={form.apellido || ''}
-          onChange={handleChange}
-          placeholder="Apellido"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          value={form.email || ''}
-          onChange={handleChange}
-          placeholder="Email"
-          required
-        />
-        <input
-          type="date"
-          name="fechaNacimiento"
-          value={form.fechaNacimiento || ''}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="telefono"
-          value={form.telefono || ''}
-          onChange={handleChange}
-          placeholder="Teléfono"
-        />
-        <input
-          name="lugarResidencia"
-          value={form.lugarResidencia || ''}
-          onChange={handleChange}
-          placeholder="Lugar de residencia"
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-surface p-6 rounded-lg border border-border">
+          <h3 className="text-lg font-semibold text-textPrimary mb-4">Recent Activity</h3>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between py-2">
+                <div>
+                  <p className="text-textPrimary font-medium">Payment to PSM #{i}</p>
+                  <p className="text-gray-400 text-sm">2 hours ago</p>
+                </div>
+                <span className="text-secondary font-medium">0.1 ETH</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <button
-          type="submit"
-          className="col-span-2 bg-blue-500 text-white p-2 rounded"
-        >
-          {editingId ? 'Update PSM' : 'Create PSM'}
-        </button>
-      </form>
-
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            <th className="border p-2">Nombre</th>
-            <th className="border p-2">Apellido</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Fecha Nac.</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {psms.map((p) => (
-            <tr key={p.id}>
-              <td className="border p-2">{p.nombre}</td>
-              <td className="border p-2">{p.apellido}</td>
-              <td className="border p-2">{p.email}</td>
-              <td className="border p-2">
-                {new Date(p.fechaNacimiento).toLocaleDateString()}
-              </td>
-              <td className="border p-2 space-x-2">
-                <button onClick={() => startEdit(p)}>Edit</button>
-                <button onClick={() => handleDelete(p.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="bg-surface p-6 rounded-lg border border-border">
+          <h3 className="text-lg font-semibold text-textPrimary mb-4">Quick Actions</h3>
+          <div className="space-y-3">
+            <button className="w-full bg-primary hover:bg-opacity-80 text-white py-3 px-4 rounded-lg transition-colors">
+              Browse PSMs
+            </button>
+            <button className="w-full bg-surface border border-border hover:bg-gray-700 text-textPrimary py-3 px-4 rounded-lg transition-colors">
+              Deposit Funds
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

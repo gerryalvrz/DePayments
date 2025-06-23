@@ -1,3 +1,4 @@
+//@ts-nocheck
 // List & Create Usuarios (with optional currentPsmId)
 import { NextResponse } from 'next/server'
 import { prisma } from '@/app/lib/prisma'
