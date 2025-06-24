@@ -8,6 +8,7 @@ const navItems = [
   { path: '/current-hire', icon: User, label: 'Current Hire' },
   { path: '/payments', icon: CreditCard, label: 'Payments' },
   { path: '/profile', icon: Settings, label: 'Profile' },
+  {path:"/psms-register",icon:Users,label:"PSM Management"}
 ];
 
 export default function Sidebar() {
