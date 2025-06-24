@@ -41,12 +41,13 @@ model Usuario {
   fechaNacimiento           DateTime   @map("Fecha de nacimiento")
   telefono                  String     @map("Teléfono")
   lugarResidencia           String     @map("Lugar de residencia")
-  // …your other Usuario fields…
   createdDate               DateTime   @map("Created Date")
   updatedDate               DateTime   @map("Updated Date")
   owner                     String     @map("Owner")
 
-  // — Relation to PSM —
   currentPsmId              String?    
   currentPsm                PSM?       @relation(fields: [currentPsmId], references: [id])
+
+  // 🆕 Add wallet field
+  wallet                    String?    @unique @map("Wallet")
 }
