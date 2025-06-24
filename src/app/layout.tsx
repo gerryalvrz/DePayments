@@ -1,35 +1,42 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
+"use client"
+
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import {PrivyProvider} from '@privy-io/react-auth';
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
-export const metadata: Metadata = {
-  title: "Motus Payments",
-  description: "Motus",
-};
 
-// app/layout.tsx
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
+  const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
+  console.log("app id", process.env.NEXT_PUBLIC_PRIVY_APP_ID);
+  console.log("ENV VAR:", process.env.NEXT_PUBLIC_TEST_VAR);
   return (
     <html lang="en">
       <body>
-        <Layout>{children}</Layout></body>
+        <PrivyProvider
+          appId={appId}
+          clientId={clientId}
+          config={{
+            embeddedWallets: {
+              ethereum: {
+                createOnLogin: 'users-without-wallets',
+              },
+            },
+          }}
+        >
+          <Layout>{children}</Layout>
+        </PrivyProvider>
+      </body>
     </html>
   );
 }
+
 
 
 

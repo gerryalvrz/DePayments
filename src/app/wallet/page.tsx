@@ -1,10 +1,25 @@
-"use client"
-import  { useState } from 'react';
-import { Wallet as WalletIcon, Send, ExternalLink } from 'lucide-react';
+"use client";
+
+import { useState, useEffect } from "react";
+import { Wallet as WalletIcon, Send, ExternalLink } from "lucide-react";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 export default function Wallet() {
+  const { login, logout, ready, authenticated } = usePrivy();
+  const { wallets } = useWallets();
+
   const [showDeposit, setShowDeposit] = useState(false);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
+  const [address, setAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (wallets?.length) {
+      setAddress(wallets[0].address);
+    }
+  }, [wallets]);
+
+  const connectWallet = () => login();
+  const disconnectWallet = () => logout();
 
   return (
     <div className="space-y-6">
@@ -16,34 +31,51 @@ export default function Wallet() {
             <h3 className="text-lg font-semibold text-textPrimary">Wallet Status</h3>
             <WalletIcon className="w-6 h-6 text-secondary" />
           </div>
-          
+
           <div className="space-y-4">
             <div>
               <p className="text-gray-400 text-sm">Connected Address</p>
-              <p className="text-textPrimary font-mono">0x742d...4B73</p>
+              <p className="text-textPrimary font-mono">
+                {authenticated && address ? address : "Not connected"}
+              </p>
             </div>
-            
+
             <div>
               <p className="text-gray-400 text-sm">Balance</p>
+              {/* You could fetch actual ETH balance here using viem, wagmi or ethers */}
               <p className="text-2xl font-bold text-secondary">0.45 ETH</p>
               <p className="text-gray-400 text-sm">≈ $1,234.56</p>
             </div>
           </div>
 
-          <button
-            onClick={() => setShowDeposit(true)}
-            className="w-full mt-6 bg-primary hover:bg-opacity-80 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-          >
-            <Send className="w-4 h-4" />
-            <span>Deposit to PSM</span>
-          </button>
+          {authenticated ? (
+            <button
+              onClick={() => setShowDeposit(true)}
+              className="w-full mt-6 bg-primary hover:bg-opacity-80 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+              <span>Deposit to PSM</span>
+            </button>
+          ) : (
+            <button
+              onClick={connectWallet}
+              className="w-full mt-6 bg-primary text-white py-3 px-4 rounded-lg"
+            >
+              Connect Wallet
+            </button>
+          )}
         </div>
 
         <div className="bg-surface p-6 rounded-lg border border-border">
-          <h3 className="text-lg font-semibold text-textPrimary mb-4">Recent Transactions</h3>
+          <h3 className="text-lg font-semibold text-textPrimary mb-4">
+            Recent Transactions
+          </h3>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-border">
+              <div
+                key={i}
+                className="flex items-center justify-between py-2 border-b border-border"
+              >
                 <div>
                   <p className="text-textPrimary font-medium">Payment #{i}</p>
                   <a href="#" className="text-info text-sm flex items-center">
@@ -60,11 +92,15 @@ export default function Wallet() {
       {showDeposit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-surface p-6 rounded-lg max-w-md w-full mx-4 border border-border">
-            <h3 className="text-lg font-semibold text-textPrimary mb-4">Deposit to PSM</h3>
-            
+            <h3 className="text-lg font-semibold text-textPrimary mb-4">
+              Deposit to PSM
+            </h3>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Amount (ETH)</label>
+                <label className="block text-gray-400 text-sm mb-2">
+                  Amount (ETH)
+                </label>
                 <input
                   type="number"
                   value={amount}
@@ -73,9 +109,11 @@ export default function Wallet() {
                   placeholder="0.1"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Recipient PSM</label>
+                <label className="block text-gray-400 text-sm mb-2">
+                  Recipient PSM
+                </label>
                 <select className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary">
                   <option>Ana Rodriguez</option>
                   <option>Carlos Silva</option>
