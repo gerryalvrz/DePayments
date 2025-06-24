@@ -12,10 +12,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
+  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID!;
   const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
-  console.log("app id", process.env.NEXT_PUBLIC_PRIVY_APP_ID);
-  console.log("ENV VAR:", process.env.NEXT_PUBLIC_TEST_VAR);
+
   return (
     <html lang="en">
       <body>
