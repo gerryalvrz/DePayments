@@ -5,17 +5,24 @@ import { Wallet as WalletIcon, Send, ExternalLink } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 export default function Wallet() {
-  const { login, logout, ready, authenticated } = usePrivy();
+  const { login, logout, ready, authenticated,getAccessToken } = usePrivy();
   const { wallets } = useWallets();
 
   const [showDeposit, setShowDeposit] = useState(false);
   const [amount, setAmount] = useState("");
   const [address, setAddress] = useState<string | null>(null);
+  
+  
 
   useEffect(() => {
     if (wallets?.length) {
       setAddress(wallets[0].address);
     }
+      let callBack =async() =>{
+      const accessToken = await getAccessToken();
+      console.log("accessToken",accessToken)
+    };
+    callBack()
   }, [wallets]);
 
   const connectWallet = () => login();
