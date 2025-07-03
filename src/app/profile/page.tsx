@@ -116,15 +116,20 @@ export default function Profile() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-3">
-        <User className="w-8 h-8 text-primary" />
-        <h1 className="text-2xl font-bold text-textPrimary">Profile Settings</h1>
-      </div>
-
-      <div className="max-w-2xl">
+    <div className="space-y-8 px-4 py-8" style={{ background: 'linear-gradient(135deg, #f7f7f8 0%, #e0c3fc 100%)', minHeight: '100vh' }}>
+      <h1 className="text-center" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222', fontSize: '1rem', fontWeight: 500, marginBottom: '2.5rem' }}>Profile Settings</h1>
+      <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit}>
-          <div className="bg-surface p-6 rounded-lg border border-border">
+          <div className="rounded-2xl shadow-lg p-8 bg-white transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer">
+            <div className="flex items-center mb-8">
+              <div className="w-16 h-16 bg-[#635BFF] rounded-full flex items-center justify-center text-white text-2xl font-bold mr-4">
+                <User className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>Your Profile</h2>
+                <p className="text-[#635BFF] font-medium" style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}>{walletAddress ? walletAddress.slice(0, 8) + '...' : ''}</p>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-400 text-sm font-medium mb-2">First Name</label>
@@ -134,7 +139,7 @@ export default function Profile() {
                   value={formData.nombre}
                   onChange={handleChange}
                   placeholder="Enter your first name"
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                   required
                 />
               </div>
@@ -147,7 +152,7 @@ export default function Profile() {
                   value={formData.apellido}
                   onChange={handleChange}
                   placeholder="Enter your last name"
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                   required
                 />
               </div>
@@ -160,7 +165,7 @@ export default function Profile() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                   required
                 />
               </div>
@@ -173,7 +178,7 @@ export default function Profile() {
                   value={formData.telefono}
                   onChange={handleChange}
                   placeholder="Enter your phone number"
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                 />
               </div>
 
@@ -185,7 +190,7 @@ export default function Profile() {
                   value={formData.lugarResidencia}
                   onChange={handleChange}
                   placeholder="Enter your location"
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                 />
               </div>
 
@@ -196,14 +201,15 @@ export default function Profile() {
                   name="fechaNacimiento"
                   value={formData.fechaNacimiento}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary focus:border-primary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black focus:border-[#635BFF]"
                 />
               </div>
             </div>
 
             <button 
               type="submit"
-              className="mt-6 bg-primary hover:bg-opacity-80 text-white py-2 px-6 rounded-lg flex items-center space-x-2 transition-colors"
+              className="mt-8 w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold flex items-center justify-center space-x-2 transition"
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               <Save className="w-4 h-4" />
               <span>Save Changes</span>

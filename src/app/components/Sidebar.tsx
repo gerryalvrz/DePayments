@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { Home, Users, Wallet, User, CreditCard, Settings } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 const navItems = [
   { path: '/', icon: Home, label: 'Dashboard' },
@@ -11,31 +13,68 @@ const navItems = [
   {path:"/psms-register",icon:Users,label:"PSM Management"}
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open = false, onClose = () => {} }) {
+  const pathname = usePathname();
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
   return (
-    <div className="w-64 bg-surface shadow-lg border-r border-border">
-      <div className="p-6">
-        <h1 className="text-xl font-bold text-textPrimary">CryptoDash</h1>
-        <p className="text-sm text-gray-400">Payments Dashboard</p>
+    <>
+      <div
+        className={
+          `z-40 w-64 h-screen bg-white/90 shadow-xl border border-gray-100 rounded-2xl flex flex-col pt-8 pb-6 px-2
+          transition-transform duration-300
+          fixed top-0 left-0
+          ${open ? 'translate-x-0' : '-translate-x-full'}
+          md:static md:translate-x-0 md:flex`
+        }
+        style={{ minHeight: '100vh', marginTop: '1rem', marginLeft: '1rem' }}
+      >
+        {/* Close button for mobile */}
+        <button
+          className="absolute top-4 right-4 md:hidden text-2xl"
+          onClick={onClose}
+        >
+          ×
+        </button>
+        <div className="p-6 flex flex-col items-center">
+          <div className="flex items-center justify-center mb-2">
+            <img src="/logodapp.svg" alt="App Logo" className="h-10 w-10 mr-3" />
+            <h1 className="text-lg font-bold" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', fontSize: '1.55rem', color: '#222' }}>
+              MotusDAO
+            </h1>
+          </div>
+          <p className="text-sm text-gray-400 text-center" style={{ fontFamily: 'JURA, Arial, Helvetica, sans-serif' }}>Payments Dashboard</p>
+        </div>
+        <nav className="mt-8 flex-1">
+          {navItems.map(({ path, icon: Icon, label }) => (
+            <Link
+              key={path}
+              href={path}
+              className={
+                `group flex items-center px-7 py-3 my-1 text-base font-medium rounded-xl transition-colors gap-3 ${
+                  path === pathname
+                    ? 'bg-[#f7f7f8] text-[#635BFF] font-bold shadow-sm'
+                    : 'text-[#222] hover:text-[#635BFF] hover:bg-[#f7f7f8]'
+                }`
+              }
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
+              onClick={onClose} // close sidebar on nav click (mobile)
+            >
+              <Icon className={`w-5 h-5 ${path === pathname ? 'text-[#635BFF]' : 'text-[#bdbdbd] group-hover:text-[#635BFF]'}`} />
+              {label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex-1" />
       </div>
-      <nav className="mt-6">
-        {navItems.map(({ path, icon: Icon, label }) => (
-          <Link
-            key={path}
-            href={path}
-            className={
-              `flex items-center px-6 py-3 text-sm font-medium transition-colors ${
-             
-                 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`
-            }
-          >
-            <Icon className="w-5 h-5 mr-3" />
-            {label}
-          </Link>
-        ))}
-      </nav>
-    </div>
+    </>
   );
 }
  

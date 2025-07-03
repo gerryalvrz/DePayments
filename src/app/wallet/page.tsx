@@ -29,36 +29,32 @@ export default function Wallet() {
   const disconnectWallet = () => logout();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-textPrimary">Wallet</h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface p-6 rounded-lg border border-border">
+    <div className="space-y-8 px-4 py-8" style={{ background: 'linear-gradient(135deg, #f7f7f8 0%, #e0c3fc 100%)', minHeight: '100vh' }}>
+      <h1 className="text-center" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222', fontSize: '1rem', fontWeight: 500, marginBottom: '2.5rem' }}>Wallet</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="rounded-2xl shadow-lg p-8 flex flex-col transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer bg-white">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-textPrimary">Wallet Status</h3>
-            <WalletIcon className="w-6 h-6 text-secondary" />
+            <h3 className="text-xl font-bold" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>Wallet Status</h3>
+            <WalletIcon className="w-8 h-8 text-[#635BFF]" />
           </div>
-
           <div className="space-y-4">
             <div>
-              <p className="text-gray-400 text-sm">Connected Address</p>
-              <p className="text-textPrimary font-mono">
+              <p className="text-gray-500 text-sm">Connected Address</p>
+              <p className="text-black font-mono">
                 {authenticated && address ? address : "Not connected"}
               </p>
             </div>
-
             <div>
-              <p className="text-gray-400 text-sm">Balance</p>
-              {/* You could fetch actual ETH balance here using viem, wagmi or ethers */}
-              <p className="text-2xl font-bold text-secondary">0.45 ETH</p>
+              <p className="text-gray-500 text-sm">Balance</p>
+              <p className="text-2xl font-bold text-[#635BFF]">0.45 ETH</p>
               <p className="text-gray-400 text-sm">≈ $1,234.56</p>
             </div>
           </div>
-
           {authenticated ? (
             <button
               onClick={() => setShowDeposit(true)}
-              className="w-full mt-6 bg-primary hover:bg-opacity-80 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+              className="w-full mt-6 rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold flex items-center justify-center space-x-2 transition"
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               <Send className="w-4 h-4" />
               <span>Deposit to PSM</span>
@@ -66,26 +62,26 @@ export default function Wallet() {
           ) : (
             <button
               onClick={connectWallet}
-              className="w-full mt-6 bg-primary text-white py-3 px-4 rounded-lg"
+              className="w-full mt-6 rounded-full bg-[#635BFF] text-white py-3 px-4 font-bold transition"
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               Connect Wallet
             </button>
           )}
         </div>
-
-        <div className="bg-surface p-6 rounded-lg border border-border">
-          <h3 className="text-lg font-semibold text-textPrimary mb-4">
+        <div className="rounded-2xl shadow-lg p-8 bg-white transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer">
+          <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>
             Recent Transactions
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between py-2 border-b border-border"
+                className="flex items-center justify-between py-2 border-b border-gray-100"
               >
                 <div>
-                  <p className="text-textPrimary font-medium">Payment #{i}</p>
-                  <a href="#" className="text-info text-sm flex items-center">
+                  <p className="text-black font-medium">Payment #{i}</p>
+                  <a href="#" className="text-[#635BFF] text-sm flex items-center">
                     0x742d...4B73 <ExternalLink className="w-3 h-3 ml-1" />
                   </a>
                 </div>
@@ -98,11 +94,10 @@ export default function Wallet() {
 
       {showDeposit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-surface p-6 rounded-lg max-w-md w-full mx-4 border border-border">
-            <h3 className="text-lg font-semibold text-textPrimary mb-4">
+          <div className="bg-white p-8 rounded-2xl max-w-md w-full mx-4 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>
               Deposit to PSM
             </h3>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
@@ -112,30 +107,28 @@ export default function Wallet() {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary"
+                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black"
                   placeholder="0.1"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">
                   Recipient PSM
                 </label>
-                <select className="w-full px-3 py-2 bg-dark border border-border rounded-lg text-textPrimary">
+                <select className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black">
                   <option>Ana Rodriguez</option>
                   <option>Carlos Silva</option>
                 </select>
               </div>
             </div>
-
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="flex-1 px-4 py-2 border border-border text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-full hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
-              <button className="flex-1 px-4 py-2 bg-primary hover:bg-opacity-80 text-white rounded-lg transition-colors">
+              <button className="flex-1 px-4 py-2 bg-[#635BFF] hover:bg-[#7d4875] text-white rounded-full font-bold transition-colors">
                 Send Transaction
               </button>
             </div>

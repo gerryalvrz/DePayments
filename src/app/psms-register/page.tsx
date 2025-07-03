@@ -74,16 +74,16 @@ export default function RegisterPSM() {
     placeholder?: string
   ) => (
     <div key={name}>
-      <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-black mb-1">{label}</label>
       <input
         type={type}
         name={name}
         value={form[name]}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 bg-background border ${
+        className={`w-full px-3 py-2 bg-white border ${
           errors[name] ? "border-red-500" : "border-border"
-        } rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary`}
+        } rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary`}
       />
       {errors[name] && (
         <p className="text-sm text-red-400 mt-1">{errors[name]}</p>
@@ -92,31 +92,33 @@ export default function RegisterPSM() {
   );
 
   return (
-    <div className="max-w-xl mx-auto bg-surface p-6 rounded-lg border border-border mt-10">
-      <h2 className="text-2xl font-bold text-textPrimary mb-6">Register New PSM</h2>
-
-      {success && (
-        <div className="mb-4 text-green-500 font-medium">
-          ✅ PSM registered successfully!
+    <div className="space-y-8 px-4 py-8" style={{ background: 'linear-gradient(135deg, #f7f7f8 0%, #e0c3fc 100%)', minHeight: '100vh' }}>
+      <div className="max-w-xl mx-auto">
+        <div className="rounded-2xl shadow-lg p-8 bg-white transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer">
+          <h2 className="text-center text-2xl font-bold mb-8" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>Register New PSM</h2>
+          {success && (
+            <div className="mb-4 text-green-500 font-medium text-center">
+              ✅ PSM registered successfully!
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {renderInput("nombre", "First Name")}
+            {renderInput("apellido", "Last Name")}
+            {renderInput("email", "Email", "email")}
+            {renderInput("fechaNacimiento", "Date of Birth", "date")}
+            {renderInput("telefono", "Phone Number", "tel", "+52 555 123 4567")}
+            {renderInput("lugarResidencia", "Location")}
+            {renderInput("owner", "Owner ID / Wallet")}
+            <button
+              type="submit"
+              className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold transition mt-4"
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
+            >
+              Register
+            </button>
+          </form>
         </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {renderInput("nombre", "First Name")}
-        {renderInput("apellido", "Last Name")}
-        {renderInput("email", "Email", "email")}
-        {renderInput("fechaNacimiento", "Date of Birth", "date")}
-        {renderInput("telefono", "Phone Number", "tel", "+52 555 123 4567")}
-        {renderInput("lugarResidencia", "Location")}
-        {renderInput("owner", "Owner ID / Wallet")}
-
-        <button
-          type="submit"
-          className="w-full bg-primary hover:bg-opacity-80 text-white py-2 px-4 rounded-lg transition-colors"
-        >
-          Register
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

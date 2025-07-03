@@ -1,9 +1,9 @@
-
 "use client"
 
 import "./globals.css";
 
 import {PrivyProvider} from '@privy-io/react-auth';
+import { useState } from 'react';
 
 
 
@@ -17,6 +17,9 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap" rel="stylesheet" />
+      </head>
       <body>
         <PrivyProvider
           appId={appId}
@@ -49,11 +52,18 @@ interface LayoutProps {
 }
 
  function Layout({ children }: LayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="flex h-screen bg-dark">
-      <Sidebar />
+    <div className="flex h-screen" style={{ background: 'var(--background)' }}>
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 md:hidden transition-opacity duration-300"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       <div className="flex-1 flex flex-col">
-        <Topbar />
+        <Topbar onSidebarToggle={() => setSidebarOpen(true)} />
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>

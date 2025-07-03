@@ -21,35 +21,34 @@ const transactions = [
 
 export default function Payments() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-textPrimary">Payment History</h1>
-        <button className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
+    <div className="space-y-8 px-4 py-8" style={{ background: 'linear-gradient(135deg, #f7f7f8 0%, #e0c3fc 100%)', minHeight: '100vh' }}>
+      <h1 className="text-center" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222', fontSize: '1rem', fontWeight: 500, marginBottom: '2.5rem' }}>Payment History</h1>
+      <div className="flex items-center justify-end mb-8">
+        <button className="flex items-center space-x-2 rounded-full border border-gray-200 px-6 py-2 text-[#635BFF] font-bold bg-white hover:bg-[#F7F7F8] transition" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
           <Filter className="w-4 h-4" />
           <span>Filter</span>
         </button>
       </div>
-
-      <div className="bg-surface rounded-lg border border-border overflow-hidden">
+      <div className="rounded-2xl shadow-lg p-0 bg-white overflow-hidden transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-dark">
+            <thead style={{ background: 'linear-gradient(90deg, #e0c3fc 0%, #8ec5fc 100%)' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">PSM</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Transaction</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#635BFF] uppercase tracking-wider" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>Date</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#635BFF] uppercase tracking-wider" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>PSM</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#635BFF] uppercase tracking-wider" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#635BFF] uppercase tracking-wider" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>Status</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#635BFF] uppercase tracking-wider" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>Transaction</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-gray-100">
               {transactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-dark hover:bg-opacity-30">
-                  <td className="px-6 py-4 whitespace-nowrap text-textPrimary">{tx.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-textPrimary">{tx.psm}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-secondary font-medium">{tx.amount}</td>
+                <tr key={tx.id} className="hover:bg-[#f7f7f8]">
+                  <td className="px-6 py-4 whitespace-nowrap text-[#222]" style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}>{tx.date}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#222]" style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}>{tx.psm}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-[#635BFF] font-bold" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{tx.amount}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-secondary/20 text-secondary">
+                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-[#e0c3fc] text-[#635BFF]" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
                       {tx.status}
                     </span>
                   </td>
@@ -58,7 +57,8 @@ export default function Payments() {
                       href={`https://etherscan.io/tx/${tx.hash}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-info hover:text-info hover:underline flex items-center"
+                      className="text-[#635BFF] hover:underline flex items-center"
+                      style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}
                     >
                       {tx.hash.slice(0, 12)}...
                       <ExternalLink className="w-3 h-3 ml-1" />
