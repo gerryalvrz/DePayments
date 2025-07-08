@@ -1,6 +1,22 @@
+"use client";
 import  { Users, Wallet, Activity, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
+import DepositModal from './components/DepositModal';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
 
 export default function Dashboard() {
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const { user } = usePrivy();
+  const { wallets } = useWallets();
+  const address = wallets?.[0]?.address;
+
+  // TODO: Replace with real user data/logic
+  const isPsychologist = false; // Cambia según tu lógica de roles
+  const userId = user?.id || "user-id-demo";
+  const userWallet = address || undefined;
+  const psmWallet = undefined;
+  const treasuryWallet = undefined;
+
   const stats = [
     { label: 'Total PSMs', value: '24', icon: Users, color: 'text-secondary' },
     { label: 'Wallet Balance', value: '1.45 ETH', icon: Wallet, color: 'text-info' },
@@ -15,17 +31,46 @@ export default function Dashboard() {
         {stats.map((stat, idx) => (
           <div
             key={stat.label}
-            className="rounded-2xl shadow-lg p-8 flex flex-col items-center transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer"
             style={{
-              background: idx % 2 === 0
-                ? 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'
-                : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-              border: 'none',
+              width: 160,
+              height: 200,
+              background: '#f8f9fa',
+              borderRadius: 20,
+              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              border: '1px solid #f3f3f3',
             }}
           >
-            <stat.icon className="w-10 h-10 mb-4 text-[#635BFF]" />
-            <div className="text-xl font-bold mb-2" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#111', fontSize: '1.5rem' }}>{stat.value}</div>
-            <div className="text-lg font-medium text-[#111] opacity-85" style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}>{stat.label}</div>
+            <div style={{
+              width: '100%',
+              height: 130,
+              borderRadius: 15,
+              background: idx % 2 === 0
+                ? 'linear-gradient(to bottom left, #e0c3fc, #f5f2f9)'
+                : 'linear-gradient(to bottom, #c3cfe2, #e7c3e4)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              justifyContent: 'flex-end',
+              padding: 16,
+              position: 'relative',
+            }}>
+              <stat.icon className="w-6 h-6 mb-2 text-[#635BFF]" style={{ position: 'absolute', top: 16, left: 16 }} />
+              {/* Special case for Wallet Balance to show ETH below */}
+              {stat.label === 'Wallet Balance' ? (
+                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 4}}>
+                  <span style={{ fontSize: 20, fontWeight: 600, color: '#000', margin: 0, zIndex: 1, lineHeight: 1, fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{stat.value.split(' ')[0]}</span>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: '#000', margin: 0, zIndex: 1, lineHeight: 1, letterSpacing: 1, fontFamily: 'Jura, Arial, Helvetica, sans-serif', marginLeft: 4 }}>{stat.value.split(' ')[1] || 'ETH'}</span>
+                </div>
+              ) : (
+                <h1 style={{ fontSize: 20, fontWeight: 600, color: '#000', margin: 0, zIndex: 1, fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{stat.value}</h1>
+              )}
+            </div>
+            <p style={{ fontSize: 14, color: '#333', textAlign: 'left', marginTop: 12, marginBottom: 0, fontWeight: 400, fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{stat.label}</p>
           </div>
         ))}
       </div>
@@ -50,12 +95,25 @@ export default function Dashboard() {
             <button className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold transition" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
               Browse PSMs
             </button>
-            <button className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
+            <button
+              className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition"
+              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
+              onClick={() => setShowDepositModal(true)}
+            >
               Deposit Funds
             </button>
           </div>
         </div>
       </div>
+      <DepositModal
+        isOpen={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        isPsychologist={isPsychologist}
+        userId={userId}
+        userWallet={userWallet}
+        psmWallet={psmWallet}
+        treasuryWallet={treasuryWallet}
+      />
     </div>
   );
 }
