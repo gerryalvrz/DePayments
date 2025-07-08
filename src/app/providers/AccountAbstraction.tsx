@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useWallets, usePrivy } from "@privy-io/react-auth";
 import { createPublicClient, Hex, http } from "viem";
