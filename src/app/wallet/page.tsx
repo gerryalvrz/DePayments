@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Wallet as WalletIcon, Send, ExternalLink } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
+import DepositModal from '../components/DepositModal';
 
 export default function Wallet() {
   const { login, logout, ready, authenticated,getAccessToken,user,exportWallet} = usePrivy();
@@ -58,7 +59,7 @@ export default function Wallet() {
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               <Send className="w-4 h-4" />
-              <span>Deposit to PSM</span>
+              <span>Deposit funds</span>
             </button>
           ) : (
             <button
@@ -92,50 +93,13 @@ export default function Wallet() {
           </div>
         </div>
       </div>
-
-      {showDeposit && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl max-w-md w-full mx-4 shadow-lg border border-gray-200">
-            <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>
-              Deposit to PSM
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">
-                  Amount (ETH)
-                </label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black"
-                  placeholder="0.1"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-400 text-sm mb-2">
-                  Recipient PSM
-                </label>
-                <select className="w-full px-3 py-2 bg-[#F7F7F8] border border-gray-200 rounded-lg text-black">
-                  <option>Ana Rodriguez</option>
-                  <option>Carlos Silva</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={() => setShowDeposit(false)}
-                className="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button className="flex-1 px-4 py-2 bg-[#635BFF] hover:bg-[#7d4875] text-white rounded-full font-bold transition-colors">
-                Send Transaction
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        isPsychologist={false}
+        userId={user?.id || "wallet-user"}
+        userWallet={address || undefined}
+      />
     </div>
   );
 }

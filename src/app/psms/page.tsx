@@ -39,50 +39,71 @@ export default function BrowsePSMs() {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {psms.map((psm, idx) => (
-          <div
-            key={psm.id}
-            className="rounded-2xl shadow-lg p-8 flex flex-col items-center transition-transform duration-300 ease-out transform hover:-translate-y-2 hover:scale-105 cursor-pointer"
-            style={{
-              background: idx % 2 === 0
-                ? 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'
-                : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-              border: 'none',
-            }}
-          >
-            <div className="w-16 h-16 bg-[#635BFF] rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">
-              {psm.nombre[0]}{psm.apellido[0]}
-            </div>
-            <h3 className="font-bold text-2xl mb-2" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222' }}>
-              {psm.nombre} {psm.apellido}
-            </h3>
-            <p className="text-lg font-medium text-[#333] opacity-85 mb-4" style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}>{psm.expertise || "No expertise"}</p>
-            <div className="space-y-2 mb-4 w-full">
-              <div className="flex items-center text-gray-700 text-sm">
-                <MapPin className="w-4 h-4 mr-2 text-[#635BFF]" />
-                {psm.lugarResidencia || "N/A"}
-              </div>
-              <div className="flex items-center text-gray-700 text-sm">
-                <Clock className="w-4 h-4 mr-2 text-[#635BFF]" />
-                {psm.horarioEnvio
-                  ? new Date(psm.horarioEnvio).toLocaleString()
-                  : "N/A"}
-              </div>
-              <div className="flex items-center text-gray-700 text-sm">
-                <Mail className="w-4 h-4 mr-2 text-[#635BFF]" />
-                {psm.email}
-              </div>
-            </div>
-            <button
-              onClick={() => handleHire(psm)}
-              className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold transition mt-2"
-              style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {psms.map((psm, idx) => (
+            <div
+              key={psm.id}
+              style={{
+                width: '100%',
+                minWidth: 0,
+                maxWidth: '100%',
+                minHeight: 180,
+                background: '#f8f9fa',
+                borderRadius: 20,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                border: '1px solid #f3f3f3',
+                boxSizing: 'border-box',
+              }}
             >
-              Hire PSM
-            </button>
-          </div>
-        ))}
+              <div style={{
+                width: '100%',
+                height: 70,
+                borderRadius: 15,
+                background: idx % 2 === 0
+                  ? 'linear-gradient(to bottom left, #e0c3fc, #f5f2f9)'
+                  : 'linear-gradient(to bottom, #c3cfe2, #e7c3e4)',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'flex-start',
+                padding: 12,
+                marginBottom: 8,
+              }}>
+                <span style={{ fontSize: 20, fontWeight: 600, color: '#000', fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{psm.nombre[0]}{psm.apellido[0]}</span>
+              </div>
+              <div style={{ width: '100%' }}>
+                <h3 style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#222', fontSize: 15, fontWeight: 600, margin: 0 }}>{psm.nombre} {psm.apellido}</h3>
+                <p style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#444', fontSize: 12, fontWeight: 400, margin: '2px 0 8px 0' }}>{psm.expertise || "No expertise"}</p>
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#635BFF', fontSize: 11, marginBottom: 2 }}>
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <span style={{ color: '#333', fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{psm.lugarResidencia || "N/A"}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#635BFF', fontSize: 11, marginBottom: 2 }}>
+                    <Clock className="w-4 h-4 mr-2" />
+                    <span style={{ color: '#333', fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{psm.horarioEnvio ? new Date(psm.horarioEnvio).toLocaleString() : "N/A"}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#635BFF', fontSize: 11 }}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    <span style={{ color: '#333', fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{psm.email}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleHire(psm)}
+                  className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-2 px-4 font-bold transition mt-2"
+                  style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', fontSize: 12 }}
+                >
+                  Hire PSM
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       {showModal && selectedPSM && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
