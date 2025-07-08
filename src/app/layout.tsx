@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import "./globals.css";
 
-import {PrivyProvider} from '@privy-io/react-auth';
-import { useState } from 'react';
-
-
+import { PrivyProvider } from "@privy-io/react-auth";
+import { SmartWalletsProvider } from "@privy-io/react-auth/smart-wallets";
+import { useState } from "react";
+import { LocalSmartWalletProvider} from "./providers/AccountAbstraction"
 
 export default function RootLayout({
   children,
@@ -18,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body>
         <PrivyProvider
@@ -27,34 +30,35 @@ export default function RootLayout({
           config={{
             embeddedWallets: {
               ethereum: {
-                createOnLogin: 'users-without-wallets',
+                createOnLogin: "users-without-wallets",
               },
             },
           }}
         >
-          <Layout>{children}</Layout>
+          <SmartWalletsProvider
+          >
+            <LocalSmartWalletProvider zeroDevProjectId="e46f4ac3-404e-42fc-a3d3-1c75846538a8" >
+            <Layout>{children}</Layout>
+            </LocalSmartWalletProvider>
+          </SmartWalletsProvider>
         </PrivyProvider>
       </body>
     </html>
   );
 }
 
-
-
-
-
-import  { ReactNode } from 'react';
-import Sidebar from './components/Sidebar';
-import Topbar from './components/Topbar';
+import { ReactNode } from "react";
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
- function Layout({ children }: LayoutProps) {
+function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="flex h-screen" style={{ background: 'var(--background)' }}>
+    <div className="flex h-screen" style={{ background: "var(--background)" }}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && (
         <div
@@ -64,11 +68,8 @@ interface LayoutProps {
       )}
       <div className="flex-1 flex flex-col">
         <Topbar onSidebarToggle={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-6 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );
 }
- 
