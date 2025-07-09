@@ -92,11 +92,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', color: '#111' }}>Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold transition" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
+            <button className="w-full rounded-full bg-[#635BFF] hover:bg-[#b266ff] text-white py-3 px-4 font-bold transition cursor-pointer" style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>
               Browse PSMs
             </button>
             <button
-              className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition"
+              className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition cursor-pointer"
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
               onClick={() => setShowDepositModal(true)}
             >

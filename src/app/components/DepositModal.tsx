@@ -149,7 +149,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
           onChange={e => setAmount(e.target.value)}
         />
         <button
-          className="mt-2 w-full bg-[#635BFF] text-white rounded-full py-3 font-bold disabled:opacity-60"
+          className="mt-2 w-full bg-[#635BFF] text-white rounded-full py-3 font-bold disabled:opacity-60 hover:bg-[#b266ff] cursor-pointer"
           disabled={!destination || !amount || Number(amount) <= 0 || loading}
           onClick={handleContinue}
         >
@@ -172,7 +172,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
                   Cancelar
                 </button>
                 <button
-                  className="flex-1 px-4 py-2 bg-[#635BFF] hover:bg-[#7d4875] text-white rounded-full font-bold transition-colors"
+                  className="flex-1 px-4 py-2 bg-[#635BFF] hover:bg-[#b266ff] text-white rounded-full font-bold transition-colors cursor-pointer"
                   onClick={handleConfirm}
                 >
                   Confirmar

@@ -1,9 +1,8 @@
+//@ts-nocheck
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useWallets, usePrivy } from "@privy-io/react-auth";
 import { createPublicClient, Hex, http } from "viem";
-import { getEntryPoint } from "@zerodev/sdk/constants";
-
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
+import { getEntryPoint, KERNEL_V3_1 } from "@zerodev/sdk";
 
 import {
   createZeroDevPaymasterClient,

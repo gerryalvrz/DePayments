@@ -95,7 +95,7 @@ export default function BrowsePSMs() {
                 </div>
                 <button
                   onClick={() => handleHire(psm)}
-                  className="w-full rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-2 px-4 font-bold transition mt-2"
+                  className="w-full rounded-full bg-[#635BFF] hover:bg-[#b266ff] text-white py-2 px-4 font-bold transition mt-2 cursor-pointer"
                   style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif', fontSize: 12 }}
                 >
                   Hire PSM
