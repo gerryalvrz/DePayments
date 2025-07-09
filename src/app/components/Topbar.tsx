@@ -36,7 +36,7 @@ export default function Topbar({ onSidebarToggle = () => {} }) {
               </div>
               <button 
                 onClick={logout}
-                className="bg-[#635BFF] hover:bg-[#7d4875] text-white px-5 py-2 rounded-full transition-colors font-bold shadow-sm"
+                className="bg-[#635BFF] hover:bg-[#b266ff] text-white px-5 py-2 rounded-full transition-colors font-bold shadow-sm cursor-pointer"
                 style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
               >
                 Disconnect
@@ -45,7 +45,7 @@ export default function Topbar({ onSidebarToggle = () => {} }) {
           ) : (
             <button 
               onClick={login}
-              className="bg-[#635BFF] hover:bg-[#7d4875] text-white px-5 py-2 rounded-full flex items-center space-x-2 transition-colors font-bold shadow-sm"
+              className="bg-[#635BFF] hover:bg-[#b266ff] text-white px-5 py-2 rounded-full flex items-center space-x-2 transition-colors font-bold shadow-sm cursor-pointer"
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               <Wallet className="w-4 h-4" />

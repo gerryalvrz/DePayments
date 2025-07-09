@@ -55,7 +55,7 @@ export default function Wallet() {
           {authenticated ? (
             <button
               onClick={() => setShowDeposit(true)}
-              className="w-full mt-6 rounded-full bg-[#635BFF] hover:bg-[#7d4875] text-white py-3 px-4 font-bold flex items-center justify-center space-x-2 transition"
+              className="w-full mt-6 rounded-full bg-[#635BFF] hover:bg-[#b266ff] text-white py-3 px-4 font-bold flex items-center justify-center space-x-2 transition cursor-pointer"
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
             >
               <Send className="w-4 h-4" />
