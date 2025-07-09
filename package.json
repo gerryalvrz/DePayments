@@ -19,7 +19,8 @@
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "viem": "^2.31.7"
+    "viem": "^2.31.7",
+    "ox": "^0.6.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
