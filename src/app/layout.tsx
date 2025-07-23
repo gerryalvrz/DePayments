@@ -5,7 +5,8 @@ import "./globals.css";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { SmartWalletsProvider } from "@privy-io/react-auth/smart-wallets";
 import { useState } from "react";
-import { LocalSmartWalletProvider} from "./providers/AccountAbstraction"
+import { LocalSmartWalletProvider } from "./providers/AccountAbstraction"
+import { SelfProvider } from "./providers/SelfProvider";
 
 export default function RootLayout({
   children,
@@ -38,7 +39,15 @@ export default function RootLayout({
           <SmartWalletsProvider
           >
             <LocalSmartWalletProvider zeroDevProjectId="e46f4ac3-404e-42fc-a3d3-1c75846538a8" >
-            <Layout>{children}</Layout>
+              <SelfProvider
+                appName="MyCeloApp"
+                scope="my-celo-app-scope" // Unique, max 31 chars
+                endpoint="https://your-app.com/api/verify" // Your backend endpoint
+                minimumAge={21}
+                excludedCountries={['IRN', 'PRK']}
+              >
+                <Layout>{children}</Layout>
+              </SelfProvider>
             </LocalSmartWalletProvider>
           </SmartWalletsProvider>
         </PrivyProvider>
