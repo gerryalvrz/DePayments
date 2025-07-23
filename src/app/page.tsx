@@ -3,8 +3,11 @@ import  { Users, Wallet, Activity, TrendingUp } from 'lucide-react';
 import React, { useState } from 'react';
 import DepositModal from './components/DepositModal';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
+import {VerifyButton} from "./components/VerificationButton";
+import { useSelf } from './providers/SelfProvider';
 
 export default function Dashboard() {
+  const { startVerification, isVerified, verificationError } = useSelf();
   const [showDepositModal, setShowDepositModal] = useState(false);
   const { user } = usePrivy();
   const { wallets } = useWallets();
@@ -96,12 +99,14 @@ export default function Dashboard() {
               Browse PSMs
             </button>
             <button
+              disabled={!isVerified}
               className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition"
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
               onClick={() => setShowDepositModal(true)}
             >
               Deposit Funds
             </button>
+            <VerifyButton/>
           </div>
         </div>
       </div>
