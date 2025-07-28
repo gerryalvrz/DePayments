@@ -82,7 +82,7 @@ export const SelfProvider: React.FC<SelfProviderProps> = ({
             console.error('Failed to initialize SelfApp:', error);
             setVerificationError('Initialization failed');
         }
-    }, [appName, scope, endpoint, logoBase64, minimumAge, excludedCountries,address]);
+    }, []);
 
     // Function to start verification (show QR modal)
     const startVerification = () => {
