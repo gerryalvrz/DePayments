@@ -1,17 +1,26 @@
 "use client";
-import  { Users, Wallet, Activity, TrendingUp } from 'lucide-react';
-import React, { useState } from 'react';
+import { Users, Wallet, Activity, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { sdk as miniAppSdk } from '@farcaster/miniapp-sdk';  // For detection
+import frameSdk from '@farcaster/frame-sdk';  // For signing (as in Privy docs)
 import DepositModal from './components/DepositModal';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { usePrivy, useWallets } from '@privy-io/react-auth';  // Updated Privy hooks
+import { useLoginToFrame } from "@privy-io/react-auth/farcaster";
+
+import { VerifyButton } from "./components/VerificationButton";
+import { useSelf } from './providers/SelfProvider';
 
 export default function Dashboard() {
+  const { startVerification, isVerified, verificationError } = useSelf();
   const [showDepositModal, setShowDepositModal] = useState(false);
-  const { user } = usePrivy();
+  const { ready, authenticated, user } = usePrivy();  // Add ready and authenticated
   const { wallets } = useWallets();
   const address = wallets?.[0]?.address;
+  const { initLoginToFrame, loginToFrame } = useLoginToFrame();  // Privy Mini App hook
 
   // TODO: Replace with real user data/logic
-  const isPsychologist = false; // Cambia según tu lógica de roles
+  const isPsychologist = false;
   const userId = user?.id || "user-id-demo";
   const userWallet = address || undefined;
   const psmWallet = undefined;
@@ -23,6 +32,45 @@ export default function Dashboard() {
     { label: 'Active Hires', value: '1', icon: Activity, color: 'text-primary' },
     { label: 'Total Payments', value: '$2,840', icon: TrendingUp, color: 'text-secondary' },
   ];
+
+  const router = useRouter();
+  const [isMiniApp, setIsMiniApp] = useState(false);  // State for async detection
+  const [isLoading, setIsLoading] = useState(true);  // Handle async loading
+
+  useEffect(() => {
+    console.log("motus")
+    const checkMiniAppAndLogin = async () => {
+      try {
+        const inMiniApp = await miniAppSdk.isInMiniApp();  // Detect Mini App context
+        setIsMiniApp(inMiniApp);
+
+        if (inMiniApp && ready && !authenticated) {
+          // Auto-login using Privy Mini App recipe
+          const { nonce } = await initLoginToFrame();
+          const result = await frameSdk.actions.signIn({ nonce });  // Sign with SDK (seamless in context)
+          await loginToFrame({
+            message: result.message,
+            signature: result.signature,
+          });
+          console.log('Auto-login complete in Mini App context');
+        }
+
+        if (inMiniApp) {
+          router.push('/farcaster-dashboard');  // Redirect if in Mini App
+        }
+      } catch (error) {
+        console.error('Mini App detection/login error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkMiniAppAndLogin();
+  }, [ready, authenticated, router]);
+
+  if (isLoading || isMiniApp) {
+    return <div>Loading Farcaster dashboard...</div>;  // Loading state during detection/redirect
+  }
 
   return (
     <div className="space-y-8 px-4 py-8" style={{ background: 'linear-gradient(135deg, #f7f7f8 0%, #e0c3fc 100%)', minHeight: '100vh' }}>
@@ -60,7 +108,6 @@ export default function Dashboard() {
               position: 'relative',
             }}>
               <stat.icon className="w-6 h-6 mb-2 text-[#635BFF]" style={{ position: 'absolute', top: 16, left: 16 }} />
-              {/* Special case for Wallet Balance to show ETH below */}
               {stat.label === 'Wallet Balance' ? (
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 4}}>
                   <span style={{ fontSize: 20, fontWeight: 600, color: '#000', margin: 0, zIndex: 1, lineHeight: 1, fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}>{stat.value.split(' ')[0]}</span>
@@ -96,12 +143,14 @@ export default function Dashboard() {
               Browse PSMs
             </button>
             <button
+              disabled={!isVerified}
               className="w-full rounded-full bg-[#F7F7F8] border border-[#EDEDED] hover:bg-[#EDEDED] text-[#111] py-3 px-4 font-bold transition"
               style={{ fontFamily: 'Jura, Arial, Helvetica, sans-serif' }}
               onClick={() => setShowDepositModal(true)}
             >
               Deposit Funds
             </button>
+            <VerifyButton/>
           </div>
         </div>
       </div>

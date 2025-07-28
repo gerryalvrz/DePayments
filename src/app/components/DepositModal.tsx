@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Transak, TransakConfig } from '@transak/transak-sdk';
+import { useWallets } from "@privy-io/react-auth";
 
 // Puedes reemplazar estos con tus propios selectores si ya existen
 type SelectProps = {
@@ -44,13 +46,15 @@ const DepositModal: React.FC<DepositModalProps> = ({
   psmWallet: psmWalletProp,
   treasuryWallet: treasuryWalletProp,
 }) => {
+  const{wallets} = useWallets();
+  const address = wallets?.[0]?.address;
   const [destination, setDestination] = useState("");
   const [amount, setAmount] = useState("");
   const [psmWallet, setPsmWallet] = useState(psmWalletProp || "");
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [transakUrl, setTransakUrl] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const transakRef = useRef<Transak | null>(null);
 
   const treasuryWallet = treasuryWalletProp || process.env.NEXT_PUBLIC_TREASURY_ADDRESS || "";
   const userWallet = userWalletProp || "0xUserWalletExample"; // Reemplaza con lógica real
@@ -81,6 +85,15 @@ const DepositModal: React.FC<DepositModalProps> = ({
     };
   }, [isOpen, onClose]);
 
+  // Cleanup for Transak
+  useEffect(() => {
+    return () => {
+      if (transakRef.current) {
+        transakRef.current.close();
+      }
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   // Opciones de destino según rol
@@ -100,33 +113,52 @@ const DepositModal: React.FC<DepositModalProps> = ({
   };
 
   const handleConfirm = () => {
-    // Redirigir a Transak en un iframe
-    const apiKey = process.env.NEXT_PUBLIC_TRANSAK_API_KEY;
-    const environment = apiKey === 'f6d14140-5912-4ea6-9579-b88593ac91c9' ? 'STAGING' : undefined;
-    const params: Record<string, string> = {
-      apiKey: apiKey || '',
-      walletAddress: destination,
-      cryptoCurrency: 'cUSD',
-      network: 'CELO',
-      fiatCurrency: 'MXN',
-      defaultFiatAmount: String(amount || 300),
-      disableCryptoSelector: 'true',
-      disableNetworkSelector: 'true',
-      hideMenu: 'true',
+    const apiKey = process.env.NEXT_PUBLIC_TRANSAK_API_KEY || '';
+    const isStaging = apiKey === 'f6d14140-5912-4ea6-9579-b88593ac91c9';
+    console.log("detination",wallets)
+    const config: TransakConfig = {
+      apiKey,
+      environment: isStaging ? Transak.ENVIRONMENTS.STAGING : Transak.ENVIRONMENTS.PRODUCTION,
+      walletAddress: address,
     };
-    if (environment) {
-      params.environment = environment;
-    }
-    const transakParams = new URLSearchParams(params);
 
-    const url = `https://global.transak.com?${transakParams.toString()}`;
-    setTransakUrl(url); // Mostrar el iframe
+    const transak = new Transak(config);
+    transakRef.current = transak;
+
+    transak.init();
+
+    // To get all the events
+    Transak.on('*', (data) => {
+      console.log(data);
+    });
+
+    // This will trigger when the user closed the widget
+    Transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, () => {
+      onClose();
+    });
+
+    /*
+    * This will trigger when the user has confirmed the order
+    * This doesn't guarantee that payment has completed in all scenarios
+    * If you want to close/navigate away, use the TRANSAK_ORDER_SUCCESSFUL event
+    */
+    Transak.on(Transak.EVENTS.TRANSAK_ORDER_CREATED, (orderData) => {
+      console.log(orderData);
+    });
+
+    /*
+    * This will trigger when the user marks payment is made
+    * You can close/navigate away at this event
+    */
+    Transak.on(Transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData) => {
+      console.log(orderData);
+      if (transakRef.current) {
+        transakRef.current.close();
+      }
+      onClose();
+    });
+
     setShowConfirm(false);
-  };
-
-  const handleCloseIframe = () => {
-    setTransakUrl(null);
-    onClose();
   };
 
   return (
@@ -181,28 +213,9 @@ const DepositModal: React.FC<DepositModalProps> = ({
             </div>
           </div>
         )}
-        {/* Iframe modal para Transak */}
-        {transakUrl && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-            <div className="relative w-full max-w-2xl h-[80vh]">
-              <button
-                onClick={handleCloseIframe}
-                className="absolute top-2 right-2 z-10 bg-white rounded-full px-3 py-1 shadow"
-              >
-                ×
-              </button>
-              <iframe
-                src={transakUrl}
-                title="Transak"
-                className="w-full h-full rounded-2xl border-0"
-                allow="camera; microphone; clipboard-read; clipboard-write"
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default DepositModal; 
+export default DepositModal;
