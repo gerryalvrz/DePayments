@@ -3,7 +3,7 @@ module.exports = {
     return [
       {
         source: '/.well-known/farcaster.json',
-        destination: 'https://api.farcaster.xyz/miniapps/hosted-manifest/01984e78-a485-eeda-c197-11adcca76a37',
+        destination: 'https://api.farcaster.xyz/miniapps/hosted-manifest/01984ec8-f312-3628-b93b-4a06b8ca64d5',
         permanent: true,
       },
     ]
