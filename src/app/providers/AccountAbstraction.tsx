@@ -1,25 +1,15 @@
-//@ts-nocheck
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useWallets, usePrivy } from "@privy-io/react-auth";
-import { createPublicClient, Hex, http } from "viem";
-import { getEntryPoint } from "@zerodev/sdk/constants";
-
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
-
+import { createPublicClient, createWalletClient, http, custom } from "viem";
 import {
   createZeroDevPaymasterClient,
   createKernelAccount,
   createKernelAccountClient,
 } from "@zerodev/sdk";
+import { getEntryPoint, KERNEL_V3_1 } from '@zerodev/sdk/constants';
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
-import {createWalletClient, custom} from 'viem';
-import { privateKeyToAccount } from "viem/accounts";
-import { celoAlfajores } from "viem/chains"; // Replace with your chain
+import { celoAlfajores } from "viem/chains";
 
-const BUNDLER_URL =
-  "https://rpc.zerodev.app/api/v3/e46f4ac3-404e-42fc-a3d3-1c75846538a8/chain/44787";
-const PAYMASTER_URL =
-  "https://rpc.zerodev.app/api/v3/e46f4ac3-404e-42fc-a3d3-1c75846538a8/chain/44787";
 
 type SmartWalletContextType = {
   kernelClient: any; // Replace with proper type from ZeroDev SDK
@@ -55,62 +45,110 @@ export const LocalSmartWalletProvider = ({
 
   useEffect(() => {
     const initializeSmartWallet = async () => {
-      if (!authenticated && !wallets[0]) {
+      if (!authenticated || !wallets || wallets.length === 0) {
         setKernelClient(null);
         setSmartAccountAddress(null);
+        setIsInitializing(false);
         return;
       }
 
       try {
         setIsInitializing(true);
         setError(null);
-       console.log("signer", wallets);
-        // Initialize public client
-        const publicClient = createPublicClient({
-          transport: http(celoAlfajores.rpcUrls.default.http[0]),
+        console.log('🔄 Initializing smart wallet with wallets:', wallets);
+        
+        // Get EntryPoint v0.7 from ZeroDev SDK
+        const entryPoint = getEntryPoint('0.7');
+        
+        // Look for either embedded wallet (email login) or connected wallet (MetaMask login)
+        const embeddedWallet = wallets.find((wallet) => wallet.walletClientType === 'privy');
+        const connectedWallet = wallets.find((wallet) => wallet.walletClientType !== 'privy');
+        
+        const walletToUse = embeddedWallet || connectedWallet;
+        if (!walletToUse) {
+          console.log('⚠️ No wallet found for smart account creation');
+          setIsInitializing(false);
+          return;
+        }
+        
+        console.log('🔧 Found wallet:', {
+          address: walletToUse.address,
+          type: walletToUse.walletClientType,
+          isEmbedded: !!embeddedWallet,
+          isConnected: !!connectedWallet
         });
-        let provider = await wallets[0].getEthereumProvider()
-        console.log("eth",provider)
-        // Create ZeroDev ECDSA validator
+        
+        // Get the EIP1193 provider from the selected wallet
+        const provider = await walletToUse.getEthereumProvider();
+        if (!provider) {
+          throw new Error('Failed to get Ethereum provider from wallet');
+        }
+
+        console.log('🔐 Creating ECDSA Kernel smart account...');
+        
+        // Create public client for blockchain interactions
+        const publicClient = createPublicClient({
+          chain: celoAlfajores,
+          transport: http(),
+        });
+        
+        // Create wallet client from the EIP-1193 provider
+        const walletClient = createWalletClient({
+          chain: celoAlfajores,
+          transport: custom(provider),
+        });
+        
+        console.log('🔐 Creating ECDSA validator...');
+        
+        // Create ECDSA validator using ZeroDev SDK
         const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-          signer:provider,
-          entryPoint: getEntryPoint("0.7"),
+          signer: walletClient as any, // Type assertion for compatibility
+          entryPoint: entryPoint,
           kernelVersion: KERNEL_V3_1,
         });
-
-        // Create Kernel account
+        
+        console.log('🔐 Creating Kernel account...');
+        
+        // Create Kernel account using ZeroDev SDK with proper version for EntryPoint v0.7
         const account = await createKernelAccount(publicClient, {
           plugins: {
             sudo: ecdsaValidator,
           },
-          entryPoint: getEntryPoint("0.7"),
+          entryPoint: entryPoint,
           kernelVersion: KERNEL_V3_1,
         });
 
-        // Create Kernel client
+        console.log('🔧 Created smart account:', account.address);
+
+        const bundlerUrl = `https://rpc.zerodev.app/api/v3/${zeroDevProjectId}/chain/${celoAlfajores.id}`;
+        const paymasterUrl = `https://rpc.zerodev.app/api/v3/${zeroDevProjectId}/chain/${celoAlfajores.id}`;
+
+        console.log('🔐 Creating paymaster client...');
+        
+        // Create paymaster client following ZeroDev docs pattern
+        const paymasterClient = createZeroDevPaymasterClient({
+          chain: celoAlfajores,
+          transport: http(paymasterUrl),
+        });
+        
+        console.log('🔐 Creating Kernel account client...');
+        
+        // Create Kernel client using ZeroDev SDK with paymaster
         const client = createKernelAccountClient({
           account,
           chain: celoAlfajores,
-          bundlerTransport: http(BUNDLER_URL),
-          paymaster: {
-            getPaymasterData: async (userOperation) => {
-              const zerodevPaymaster = createZeroDevPaymasterClient({
-                chain: celoAlfajores,
-                transport: http(PAYMASTER_URL),
-              });
-              return zerodevPaymaster.sponsorUserOperation({
-                userOperation,
-              });
-            },
-          },
+          bundlerTransport: http(bundlerUrl),
+          paymaster: paymasterClient,
+          client: publicClient,
         });
-        console.log("smart accounts client", client);
-        console.log("smart accounts client", client.getChainId());
+        
+        console.log("✅ Smart account client created:", client.account.address);
+        console.log("Chain ID:", await client.getChainId());
 
         setKernelClient(client);
         setSmartAccountAddress(account.address);
       } catch (err) {
-        console.error("Error initializing smart wallet:", err);
+        console.error("❌ Error initializing smart wallet:", err);
         setError(err instanceof Error ? err : new Error("Unknown error"));
       } finally {
         setIsInitializing(false);

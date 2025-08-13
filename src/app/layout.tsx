@@ -2,11 +2,17 @@
 
 import "./globals.css";
 import { PrivyProvider } from "@privy-io/react-auth";
-import { SmartWalletsProvider } from "@privy-io/react-auth/smart-wallets";
-import { useState } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { LocalSmartWalletProvider } from "./providers/AccountAbstraction";
 import { SelfProvider } from "./providers/SelfProvider";
 import { MiniAppProvider } from '@neynar/react';
+import { celoAlfajores } from 'viem/chains';
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
+import UserStateDebug from "./components/UserStateDebug";
+import ClientOnly from "./components/ClientOnly";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ContractTest from "./components/ContractTest";
 
 export default function RootLayout({
   children,
@@ -32,14 +38,22 @@ export default function RootLayout({
             appId={appId}
             clientId={clientId}
             config={{
-              embeddedWallets: {
-                ethereum: {
-                  createOnLogin: "users-without-wallets",
-                },
+              appearance: {
+                theme: 'light',
+                accentColor: '#635BFF',
+                walletList: ['metamask', 'detected_wallets'],
+                showWalletLoginFirst: false,
               },
+              loginMethods: ['email', 'wallet'],
+              embeddedWallets: {
+                createOnLogin: 'users-without-wallets',
+                requireUserPasswordOnCreate: false,
+              },
+              defaultChain: celoAlfajores,
+              supportedChains: [celoAlfajores],
             }}
           >
-            <SmartWalletsProvider>
+            <ErrorBoundary fallback={<div className="p-4 text-red-600">Error loading smart wallet</div>}>
               <LocalSmartWalletProvider zeroDevProjectId="e46f4ac3-404e-42fc-a3d3-1c75846538a8">
                 <SelfProvider
                   appName="MyCeloApp"
@@ -51,7 +65,7 @@ export default function RootLayout({
                   <FrameSafeLayout>{children}</FrameSafeLayout>
                 </SelfProvider>
               </LocalSmartWalletProvider>
-            </SmartWalletsProvider>
+            </ErrorBoundary>
           </PrivyProvider>
         </MiniAppProvider>
       </body>
@@ -59,17 +73,18 @@ export default function RootLayout({
   );
 }
 
-import { ReactNode } from "react";
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-
 interface LayoutProps {
   children: ReactNode;
 }
 
 function FrameSafeLayout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isFrame = typeof window !== 'undefined' && window.self !== window.top;
+  const [isFrame, setIsFrame] = useState(false);
+
+  // Check if we're in a frame after hydration to avoid SSR mismatch
+  useEffect(() => {
+    setIsFrame(window.self !== window.top);
+  }, []);
 
   return (
     <div className={`flex ${isFrame ? 'h-auto' : 'h-screen'} bg-gray-50`}>
@@ -101,6 +116,16 @@ function FrameSafeLayout({ children }: LayoutProps) {
           </div>
         </main>
       </div>
+      
+      {/* Debug components - only show in development */}
+      <ClientOnly fallback={
+        <div className="fixed bottom-4 right-4 opacity-0 transition-opacity">
+          {/* Hidden placeholder for UserStateDebug during SSR */}
+        </div>
+      }>
+        <UserStateDebug />
+        <ContractTest />
+      </ClientOnly>
     </div>
   );
 }

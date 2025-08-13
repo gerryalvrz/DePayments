@@ -61,28 +61,34 @@ export const SelfProvider: React.FC<SelfProviderProps> = ({
 
     // Initialize SelfApp on mount
     useEffect(() => {
-        try {
-            const app = new SelfAppBuilder({
-                appName: "Self Birthday",
-                scope: "17899719194212735026957225320642678959677893292153380847888025107082306574574",
-                endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
-                endpointType: "staging_celo",
-                userId: address,
-                userIdType: "hex",
-                disclosures: {
-                    date_of_birth: true,
-                },
-                devMode: true,
+        if(address){
+            try {
+                const app = new SelfAppBuilder({
+                    appName: "Self Playground",
+                    scope: "self-playground",
+                    endpoint: "https://playground.self.xyz/api/verify",
+                    // endpoint: "https://c622-118-169-75-84.ngrok-free.app/api/verify",
+                    endpointType: "https",
+                    logoBase64: "https://i.imgur.com/Rz8B3s7.png",
+                    userId: address,
+                    userIdType: "hex",
+                    disclosures: {
+                        minimumAge: 18,
+                    },
+                    version: 2, 
+                    userDefinedData: "Motus",
+                    devMode: false,
+                }
+                    // devMode: true, // Uncomment for testing with mock data
+                ).build();
+    
+                setSelfApp(app);
+            } catch (error) {
+                console.error('Failed to initialize SelfApp:', error);
+                setVerificationError('Initialization failed');
             }
-                // devMode: true, // Uncomment for testing with mock data
-            ).build();
-
-            setSelfApp(app);
-        } catch (error) {
-            console.error('Failed to initialize SelfApp:', error);
-            setVerificationError('Initialization failed');
         }
-    }, []);
+    }, [address]);
 
     // Function to start verification (show QR modal)
     const startVerification = () => {
