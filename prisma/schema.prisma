@@ -68,7 +68,7 @@ model Usuario {
   sesionesCompletadas   Int          @default(0) @map("Sesiones Completadas")
   tipoAtencion          String?      @map("Tipo Atención")
   evaluaciones          Evaluacion[] @relation("UsuarioEvaluaciones")
-  recompensas           Recompensa[] @relation("UsuarioRecompensas")
+  recompensas           Recompensa[]
   sesiones              Sesion[]
   currentPsm            PSM?         @relation(fields: [currentPsmId], references: [id])
 }
@@ -125,16 +125,14 @@ model Certificacion {
 model Recompensa {
   id             String   @id @default(uuid()) @map("ID")
   receptorId     String   @map("Receptor ID")
-  tipoReceptor   String   @map("Tipo Receptor") // psm, usuario
-  tipoRecompensa String   @map("Tipo Recompensa") // sesion, referido, participacion, comunidad
+  tipoReceptor   String   @map("Tipo Receptor")
+  tipoRecompensa String   @map("Tipo Recompensa")
   puntos         Int      @map("Puntos")
   descripcion    String   @map("Descripción")
-  relacionadoId  String?  @map("Relacionado ID") // ID de sesión, referido, etc.
+  relacionadoId  String?  @map("Relacionado ID")
   createdDate    DateTime @default(now()) @map("Created Date")
-  
-  // Relations - Note: These are optional references, actual relation determined by tipoReceptor
   psm            PSM?     @relation(fields: [receptorId], references: [id], map: "RecompensaPSM")
-  usuario        Usuario? @relation("UsuarioRecompensas", fields: [receptorId], references: [id], map: "RecompensaUsuario")
+  usuario        Usuario? @relation(fields: [receptorId], references: [id], map: "RecompensaUsuario")
 }
 
 model Newsletter {
