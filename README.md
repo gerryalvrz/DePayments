@@ -1,4 +1,4 @@
-# Motus Payment App
+# Motus Payment App UX
 
 This is the frontend application for the Motus payment system built with [Next.js](https://nextjs.org) and bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
