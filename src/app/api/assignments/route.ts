@@ -193,67 +193,74 @@ export async function POST(request: Request) {
       )
     }
 
-    // Update user assignment
-    const updatedUsuario = await prisma.usuario.update({
-      where: { id: usuarioId },
-      data: {
-        currentPsmId: psmId,
-        estatusProceso: 'encuadre', // Move to framing stage
-        updatedDate: new Date()
-      },
-      include: {
-        currentPsm: {
-          select: {
-            id: true,
-            nombre: true,
-            apellido: true,
-            especialidades: true,
-            biografia: true,
-            foto: true,
-            email: true,
-            telefono: true
+    // Use transaction to ensure all operations succeed or fail together
+    const result = await prisma.$transaction(async (tx) => {
+      // Update user assignment
+      const updatedUsuario = await tx.usuario.update({
+        where: { id: usuarioId },
+        data: {
+          currentPsmId: psmId,
+          estatusProceso: 'encuadre', // Move to framing stage
+          updatedDate: new Date()
+        },
+        include: {
+          currentPsm: {
+            select: {
+              id: true,
+              nombre: true,
+              apellido: true,
+              especialidades: true,
+              biografia: true,
+              foto: true,
+              email: true,
+              telefono: true
+            }
           }
         }
-      }
-    })
+      })
 
-    // Create initial framing session
-    const framingSession = await prisma.sesion.create({
-      data: {
-        usuarioId,
-        psmId,
-        fechaSesion: new Date(Date.now() + 24 * 60 * 60 * 1000), // Next day
-        tipoSesion: 'encuadre',
-        duracionMinutos: 50,
-        estado: 'programada'
-      }
-    })
+      // Create initial framing session
+      const framingSession = await tx.sesion.create({
+        data: {
+          usuarioId,
+          psmId,
+          fechaSesion: new Date(Date.now() + 24 * 60 * 60 * 1000), // Next day
+          tipoSesion: 'encuadre',
+          duracionMinutos: 50,
+          estado: 'programada'
+        }
+      })
 
-    // Create assignment reward for PSM
-    await prisma.recompensa.create({
-      data: {
-        receptorId: psmId,
-        tipoReceptor: 'psm',
-        tipoRecompensa: 'asignacion',
-        puntos: 5,
-        descripcion: `New patient assigned: ${updatedUsuario.nombre} ${updatedUsuario.apellido}`,
-        relacionadoId: usuarioId
-      }
+      // Create assignment reward for PSM
+      await tx.recompensa.create({
+        data: {
+          receptorId: psmId,
+          tipoReceptor: 'psm',
+          tipoRecompensa: 'asignacion',
+          puntos: 5,
+          descripcion: `New patient assigned: ${updatedUsuario.nombre} ${updatedUsuario.apellido}`,
+          relacionadoId: usuarioId
+        }
+      })
+
+      return { updatedUsuario, framingSession }
     })
 
     return NextResponse.json({
+      success: true,
       assignment: {
         usuario: {
-          id: updatedUsuario.id,
-          nombre: updatedUsuario.nombre,
-          apellido: updatedUsuario.apellido,
-          estatusProceso: updatedUsuario.estatusProceso
+          id: result.updatedUsuario.id,
+          nombre: result.updatedUsuario.nombre,
+          apellido: result.updatedUsuario.apellido,
+          estatusProceso: result.updatedUsuario.estatusProceso
         },
-        psm: updatedUsuario.currentPsm,
+        psm: result.updatedUsuario.currentPsm,
         framingSession: {
-          id: framingSession.id,
-          fechaSesion: framingSession.fechaSesion,
-          tipoSesion: framingSession.tipoSesion
+          id: result.framingSession.id,
+          fechaSesion: result.framingSession.fechaSesion,
+          tipoSesion: result.framingSession.tipoSesion,
+          duracionMinutos: result.framingSession.duracionMinutos
         }
       },
       message: `Successfully assigned to ${psm.nombre} ${psm.apellido}. Framing session scheduled.`

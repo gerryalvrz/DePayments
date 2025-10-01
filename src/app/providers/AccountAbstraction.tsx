@@ -161,6 +161,28 @@ export const LocalSmartWalletProvider = ({
     <SmartWalletContext.Provider
       value={{ kernelClient, smartAccountAddress, isInitializing, error }}
     >
+      {error && (
+        <div className="fixed top-20 right-4 z-50 max-w-md bg-blue-50 border border-blue-300 rounded-lg shadow-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🛠️</span>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-blue-900">Smart Wallet Setup</h3>
+              <p className="text-xs text-blue-700 mt-1">
+                Your smart wallet is being configured. This is normal for first-time setup. You can browse therapists while this completes.
+              </p>
+              <p className="text-xs text-blue-600 mt-2 font-medium">
+                Features like booking sessions will be available once setup is complete.
+              </p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-blue-600 hover:text-blue-800 text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
       {children}
     </SmartWalletContext.Provider>
   );

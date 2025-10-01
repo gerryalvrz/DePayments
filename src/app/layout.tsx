@@ -53,8 +53,12 @@ export default function RootLayout({
               supportedChains: [celoAlfajores],
             }}
           >
-            <ErrorBoundary fallback={<div className="p-4 text-red-600">Error loading smart wallet</div>}>
-              <LocalSmartWalletProvider zeroDevProjectId="e46f4ac3-404e-42fc-a3d3-1c75846538a8">
+            <LocalSmartWalletProvider zeroDevProjectId="e46f4ac3-404e-42fc-a3d3-1c75846538a8">
+              <ErrorBoundary fallback={
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-yellow-800 text-sm">⚠️ Smart wallet initialization in progress. Some features may be limited.</p>
+                </div>
+              }>
                 <SelfProvider
                   appName="MyCeloApp"
                   scope="my-celo-app-scope"
@@ -64,8 +68,8 @@ export default function RootLayout({
                 >
                   <FrameSafeLayout>{children}</FrameSafeLayout>
                 </SelfProvider>
-              </LocalSmartWalletProvider>
-            </ErrorBoundary>
+              </ErrorBoundary>
+            </LocalSmartWalletProvider>
           </PrivyProvider>
         </MiniAppProvider>
       </body>
